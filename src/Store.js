@@ -1,4 +1,7 @@
 const fs = require('fs');
+const _ = require('underscore');
+
+const Product = require('./Product.js');
 
 class Store {
     constructor(pricingRulesPath, products, checkout) {
@@ -56,12 +59,19 @@ class CheckoutSystem {
         }
 
         let checkoutValue = null;
+        let splitted = null;
 
-        // split product into arrays of same type
+        // split products into buckets (arrays) of products with the same id
+        _.groupBy(this.cart, 'id'); // todo test if this works
 
-        checkoutValue = applyPricingRules(pricingRules, this.cart);
+
+        checkoutValue = applyPricingRules(pricingRules, splitted);
 
         return checkoutValue;
+    }
+
+    applyPricingRules(pricingRulesHandler, buckets){
+
     }
 
 }

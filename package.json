@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/sergio-domingues/challenge/issues"
   },
-  "homepage": "https://github.com/sergio-domingues/challenge#readme"
+  "homepage": "https://github.com/sergio-domingues/challenge#readme",
+  "dependencies": {
+    "underscore": "^1.9.0"
+  }
 }
