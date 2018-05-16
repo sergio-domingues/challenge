@@ -1,0 +1,15 @@
+{
+    "PricingRules": [{
+            "type": "bulkDiscount",
+            "products": ["3M_SP_C"],
+            "ammount": 3,
+            "discountPerItem": 0.5
+        },
+        {
+            "type": "buyXGetY",
+            "products": ["1M_TRAF"],
+            "productAmmount": 1,
+            "freeAmmount": 1
+        }
+    ]
+}
