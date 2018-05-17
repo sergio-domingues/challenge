@@ -1,0 +1,11 @@
+{
+    "AvailableRuleTypes": 
+    [
+        {
+            "type": "bulkDiscount"
+        },
+        {
+            "type": "buyXGetY"
+        }
+    ]
+}

@@ -1,7 +1,8 @@
 class PricingRule{
-    constructor(productId, ruleType){
+    constructor(productId, ruleType, properties){
         this.productId = productId;
         this.ruleType = ruleType;
+        this.properties = properties;
     }
 
     toString(){
