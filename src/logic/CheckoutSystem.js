@@ -1,58 +1,16 @@
-const fs = require('fs');
-const _ = require('underscore');
-const path = require('path');
-
-const Product = require('./Product.js');
-const PricingRule = require('./PricingRule.js');
-
-
-const PricingRulesPath = path.join(_dirname, 'res', 'rules.json');
-
-const RULE_TYPES = {
-    BULK_DISCOUNT: "bulkDiscount",
-    BUY_X_GET_Y: "buyOneGetOneFree"
-}
-
-
-class Store {
-    constructor(products, checkout) {
-        if (!(products && checkout)) {
-            throw new Error('On Store constructor: params should not be null!');
-        }
-
-        this.pricingRules = this.getPricingRules(PricingRulesPath);
-        this.productList = products;
-        this.checkoutSystem = checkout; // assumes that there is only 1 checkout sys instance per store
-    }
-
-    getPricingRules = (filePath) => {
-        const json = readFile(PricingRulesPath);
-        let rules = [];
-
-        for (rule in json) {
-            rules.push(
-                new PricingRule(
-                    rule.products,
-                    rule.ruleType,
-                    rule.properties
-                ))
-        }
-
-        return rules;
-    }
-
-    checkout = () => {
-        return this.checkoutSystem.checkout(this.pricingRules);
-    }
-}
-
-
 class CheckoutSystem {
     constructor() {
-        this.cart = []; 
+        this.cart = [];
     }
 
-    scanProduct = (item) => {
+    toString() {
+        if (this.cart.length == 0)
+            return '<empty>';
+        else
+            this.cart.toString();
+    }
+
+    scanProduct(item) {
         if (item) { // adds product to cart
             this.cart.push(item);
         } else {
@@ -60,7 +18,7 @@ class CheckoutSystem {
         }
     }
 
-    checkout = (pricingRules) => {
+    checkout(pricingRules) {
         if (!pricingRules) {
             throw new Error('On checkout: Pricing rules should not be null!');
         }
@@ -76,7 +34,7 @@ class CheckoutSystem {
         return checkoutValue;
     }
 
-    applyPricingRules = (pricingRules, buckets) => {
+    applyPricingRules(pricingRules, buckets) {
         if (!(pricingRules && buckets)) {
             throw new Error('On applyPricingRules: params should not be null!');
         }
@@ -94,7 +52,7 @@ class CheckoutSystem {
         return totalAmmount;
     }
 
-    handlePricingRule = (pricingRules, bucket) => {
+    handlePricingRule(pricingRules, bucket) {
         if (!(pricingRules && bucket)) {
             throw new Error('On handlePricingRule: params should not be null!');
         }
@@ -116,7 +74,7 @@ class CheckoutSystem {
         return handlers(handlers[rule.ruleType] || handlers.default)(); // default in case rule == null
     }
 
-    getRule = (rules, productId) => {
+    getRule(rules, productId) {
         for (let rule in rules) {
             if (rule.hasProductId(productId))
                 return rule;
@@ -129,68 +87,46 @@ class CheckoutSystem {
      * HANDLERS
      */
 
-    handleBulkDiscountRule = (properties, bucket) => {        
+    handleBulkDiscountRule(properties, bucket) {
         const itemLength = bucket.length;
         const threshold = properties.threshold; // product ammount threshold to apply discount
         const discountValue = properties.discountPerItem;
-        
+
         let sum = 0;
-        const numDiscounts = Math.floor(itemLength/threshold); // number of discount applied
-        
+        const numDiscounts = Math.floor(itemLength / threshold); // number of discount applied
+
         // sum = total - (itemLength/threshold) * discountValue
         sum = list.reduce(sumProductPrices) - numDiscounts * discountValue;
 
         return sum;
     }
 
-    handleBuyXGetYRule = (properties, bucket) => {
+    handleBuyXGetYRule(properties, bucket) {
         const itemLength = bucket.length;
         const threshold = properties.productAmmount; // product ammount threshold to receive free items
-        const freeAmmount = properties.freeAmmount;  
-        
+        const freeItemAmmount = properties.freeAmmount;
+
         let sum = 0;
-        // const numOffers = itemLength - ... ;  // todo
+        const numOffers = Math.floor(itemLength / threshold);
 
-        sum = list.reduce(sumProductPrices);
-
+        sum = list.reduce(sumProductPrices) - (numOffers * freeItemAmmount * bucket[0].price);
 
         return sum;
     }
 
     // Returns raw sum of all item prices without any kind of processment
-    handleDefaultRule = (bucket) => { 
+    handleDefaultRule(bucket) {
         return list.reduce(sumProductPrices);
     }
 
-}
-
-// ?=================================================================
-// auxiliar methods
-
-readFile = (filePath) => {
-    if (!filePath) {
-        throw new Error('On readFile: File path should not be null!');
-    }
-
-    let json = null;
-
-    // read file from @filePath in json format
-    fs.readFileSync(filePath, (err, data) => {
-        if (err) {
-            throw new Error(e);
-        } else {
-            try {
-                json = JSON.parse(data);
-            } catch (e) {
-                console.log('Error while trying to parse data in JSON format.');
-            }
-        }
-    });
-
-    return json;
 }
 
 // sum function to be used by Array.reduce method
 sumProductPrices = (total, item) => {
     return total + item.price; // return the sum of the accumulator and the current price. as the the new accumulator)
 };
+
+
+module.exports = {
+    CheckoutSystem,
+}

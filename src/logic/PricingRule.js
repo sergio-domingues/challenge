@@ -14,5 +14,9 @@ class PricingRule{
     }
 }
 
+module.exports = {
+    PricingRule,
+}
+
 
 

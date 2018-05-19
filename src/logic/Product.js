@@ -4,3 +4,7 @@ class Product {
         this.price = price;
     }
 }
+
+module.exports = {
+    Product,
+}
