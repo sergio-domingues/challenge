@@ -3,12 +3,13 @@ const _ = require('underscore');
 const path = require('path');
 const rootDir = require('app-root-dir').get();
 
-const Product = require(path.join(rootDir, '/src/logic', 'Product.js')); 
-const PricingRule = require(path.join(rootDir, '/src/logic', 'PricingRule.js'));
-const checkoutSystem = require(path.join(rootDir, '/src/logic', 'CheckoutSystem.js'));
+const Product = require(path.join(rootDir, '/src/logic', 'Product.js')).Product; 
+const PricingRule = require(path.join(rootDir, '/src/logic', 'PricingRule.js')).PricingRule;
+const CheckoutSystem = require(path.join(rootDir, '/src/logic', 'CheckoutSystem.js')).CheckoutSystem;
 
 
 const RULES_PATH = path.join(rootDir, 'res', 'rules.json');
+const PRODUCTS_PATH = path.join(rootDir, 'res', 'products.json');
 
 const RULE_TYPES = {
     BULK_DISCOUNT: "bulkDiscount",
@@ -17,17 +18,17 @@ const RULE_TYPES = {
 
 
 class Store {
-    constructor(rules = RULES_PATH) {  // Default value     
+    constructor(rules = RULES_PATH, products = PRODUCTS_PATH) {  // Default value     
         this.pricingRules = this.getPricingRules(rules);
-        this.productList = [];
-        this.checkoutSystem = new checkoutSystem.CheckoutSystem(); // assumes that there is only 1 checkout sys instance per store
+        this.productList = this.geProductList(products);
+        this.checkoutSystem = new CheckoutSystem(); // assumes that there is only 1 checkout sys instance per store
     }
 
     getPricingRules(filePath) {
-        const json = readFile(filePath);
+        const json = JSON.parse(readFile(filePath));
         let rules = [];
 
-        for (rule in json) {
+        for (rule in json.pricingRules) {
             rules.push(
                 new PricingRule(
                     rule.products,
@@ -37,6 +38,21 @@ class Store {
         }
 
         return rules;
+    }
+
+    geProductList(filePath){
+        const json = JSON.parse(readFile(filePath));
+        let products = [];
+
+        for (product in json.products) {
+            products.push(
+                new Product(
+                    product.id,
+                    product.price,
+                ))
+        }
+
+        return products;
     }
 
     addToCart(productId) {

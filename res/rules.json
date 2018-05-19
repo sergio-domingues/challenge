@@ -1,5 +1,5 @@
 {
-    "PricingRules": [
+    "pricingRules": [
         {
             "type": "bulkDiscount",
             "products": ["3M_SP_C"],

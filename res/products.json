@@ -1,0 +1,17 @@
+{
+    "products":
+    [
+        {
+            "id": "1M_TRAF",
+            "price": 3.11 
+        },
+        {
+            "id": "3M_SP_C",
+            "price": 5.00
+        },
+        {
+            "id": "MAP_EUR",
+            "price": 11.23
+        }
+    ]
+}

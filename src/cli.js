@@ -5,7 +5,7 @@ const readline = require('readline');
 
 // strings
 const greeting = '=====  Welcome to NDrive Store! Happy shopping :-)   =====';
-const instructions = `=> [CLI INSTRUCTIONS]\n- Write '1' for product one, '2' for product two and so on.\n- In order to checkout just write '0' or 'checkout'.`;
+const instructions = `=> [CLI INSTRUCTIONS]\n- Write the <Product Code> in order to add it to the cart.\n- To checkout just write 'checkout'.`;
 const startMsg = `Press 'Enter' to start shopping.`;
 const productTable = `This is our product list:\n
 +---------------|------------------------------|---------+ 
@@ -28,13 +28,14 @@ cli = (storeObj) => {
     });
 
     let store = storeObj;
-
+        
     rl.question(initialMsg, (answer) => {
-       rl.write(startMsg)
+       const iterationMsg = `${cartMsg}${store.getCartInfo()}\n${template}`;
+       rl.write(iterationMsg)
     }); 
     
     rl.on('line', (data) => {
-        handleUserInteraction(rl, data);
+        handleUserInteraction(rl, store, data);
     });
 
 
@@ -56,8 +57,21 @@ closeInput = (interface) => {
     process.stdin.destroy();
 }
 
-handleUserInteraction = (rl, input) => {
-    
+handleUserInteraction = (rl, storeObj, input) => {
+    const iterationMsg = `${cartMsg}${store.getCartInfo()}\n${template}`;
+    switch(input){
+        case 'checkout': {
+            console.log(storeObj.checkout());
+        }
+        
+        default: {
+            let ret = storeObj.addToCart(input);
+
+            if(!ret){
+                rl.write('Not a valid input! Check cli instructions please.');
+            }           
+        }
+    }
 }
 
 

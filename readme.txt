@@ -16,7 +16,8 @@ In order to run the program, encontrando-se na raíz do directório, execute os 
  *           i.e. rule for productId X : {productAmmount : 5, freeAmmount: 10}
  * 
  * Misc:
- *  - User can add pricing rules replicating the existing pricing rules in the example "rules.json", but should keep the object structure, i.e. dont add/delete properties
+ *  - User can add more products by extending the existing product list in the example "products.json" 
+ *  - User can add pricing rules by extending the existing pricing rules in the example "rules.json", but should keep the object structure, i.e. dont add/delete properties
  *  - The contents of "rules.json" is not verified: 
  *      - you can get weird checkout values (i.e. negative values, etc):
  *          ex: If you supply a bulkDiscount rule with a discount > product price
