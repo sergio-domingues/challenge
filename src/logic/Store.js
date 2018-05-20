@@ -127,3 +127,12 @@ readFile = (filePath) => {
 module.exports = {
     Store,
 }
+
+/*
+let st = new Store();
+st.addToCart('MAP_EUR');
+st.addToCart('3M_SP_C');
+st.addToCart('3M_SP_C');
+st.addToCart('3M_SP_C');
+st.addToCart('1M_TRAF');
+console.log(st.checkout());*/

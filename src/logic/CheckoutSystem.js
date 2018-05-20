@@ -12,7 +12,7 @@ class CheckoutSystem {
             return this.cart.toString();
     }
 
-    emptyCart(){
+    emptyCart() {
         this.cart = [];
     }
 
@@ -79,11 +79,11 @@ class CheckoutSystem {
                 return this.handleBuyXGetYRule(rule.properties, bucket);
             },
             ["default"]: () => {
-                return this.handleDefaultRule(bucket); // just returns the raw price sum of the products price
+                return this.handleDefaultRule(bucket); // just returns the raw sum of the products' price
             }
         }
 
-        return (handlers[rule.ruleType] || handlers['default'])(); // default in case rule == null
+        return rule == null ? (handlers['default'])() : (handlers[rule.ruleType])();
     }
 
     getRule(rules, productId) {
@@ -145,7 +145,7 @@ function getBucketTotal(bucket) {
 function precisionRound(number, precision) {
     var factor = Math.pow(10, precision);
     return Math.round(number * factor) / factor;
-  }
+}
 
 
 module.exports = {

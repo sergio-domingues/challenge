@@ -19,7 +19,7 @@ const productTable = `This is our product list:\n
 const initialMsg = `\n${greeting}\n\n${instructions}\n\n${productTable}\n\n${startMsg}`;
 const cartMsg = `Shopping Cart: `;
 const template = `Enter a product ID (write 'checkout' to empty your cart):`;
-const newInteraction = `Your cart is now empty! You can keep doing more purchases.`;
+const newInteraction = `Your cart is now empty! You can keep shopping.`; 
 
 closeInput = (interface) => {
     interface.close();
