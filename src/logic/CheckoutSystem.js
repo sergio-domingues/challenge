@@ -1,6 +1,12 @@
 const _ = require('underscore');
 
+/**
+ * Class representing a Checkout System
+ */
 class CheckoutSystem {
+    /**
+     * Create a product
+     */
     constructor() {
         this.cart = [];
     }
@@ -12,10 +18,17 @@ class CheckoutSystem {
             return this.cart.toString();
     }
 
+    /**
+     * Reassigns cart with a empty one
+     */
     emptyCart() {
         this.cart = [];
     }
 
+    /**
+     * Adds @item to cart
+     * @param {string} item Product id
+     */
     scanProduct(item) {
         if (item) { // adds product to cart
             this.cart.push(item);
@@ -24,12 +37,18 @@ class CheckoutSystem {
         }
     }
 
+    /**
+     * Generates the checkout value applying the pricing rules to the cart items 
+     * @param {Array} pricingRules List of the existing pricing rules
+     * @param {Object} ruleTypes List of the existing rule types 
+     * @return {number} The checkout ammount
+     */
     checkout(pricingRules, ruleTypes) {
         if (!pricingRules) {
             throw new Error('On checkout: Pricing rules should not be null!');
         }
 
-        if(this.cart.length == 0)
+        if (this.cart.length == 0)
             return 0;
 
         this.ruleTypes = ruleTypes;
@@ -44,6 +63,11 @@ class CheckoutSystem {
         return checkoutValue;
     }
 
+    /**
+     * Applies pricing rules to the cart items
+     * @param {array} pricingRules List of the existing pricing rules
+     * @param {array} buckets List of buckets with products
+     */
     applyPricingRules(pricingRules, buckets) {
         if (!(pricingRules && buckets)) {
             throw new Error('On applyPricingRules: params should not be null!');
@@ -62,6 +86,11 @@ class CheckoutSystem {
         return totalAmmount;
     }
 
+    /**
+     * Handles pricing rule for each product
+     * @param {array} pricingRules 
+     * @param {arary} bucket 
+     */
     handlePricingRule(pricingRules, bucket) {
         if (!(pricingRules && bucket)) {
             throw new Error('On handlePricingRule: params should not be null!');
@@ -89,6 +118,12 @@ class CheckoutSystem {
         return rule == null ? (handlers['default'])() : (handlers[rule.ruleType])();
     }
 
+    /**
+     * Get's the rule linked to @productId
+     * @param {array} rules List of rules
+     * @param {string} productId Product's id
+     * @return Returns the rule if exists, null otherwise
+     */
     getRule(rules, productId) {
         for (let i = 0; i < rules.length; i++) {
             if (rules[i].hasProductId(productId) >= 0)
@@ -98,10 +133,16 @@ class CheckoutSystem {
         return null;
     }
 
+
     /**
      * HANDLERS
      */
 
+    /**
+     * Applies the bulk dicount rule
+     * @param {Object} properties Rule attributes
+     * @param {array} bucket List of products
+     */
     handleBulkDiscountRule(properties, bucket) {
         const itemLength = bucket.length;
         const threshold = properties.threshold; // product ammount threshold to apply discount
@@ -116,6 +157,11 @@ class CheckoutSystem {
         return sum;
     }
 
+    /**
+     * Applies the Buy X Get Y rule 
+     * @param {Object} properties Rule attributes
+     * @param {array} bucket List of products
+     */
     handleBuyXGetYRule(properties, bucket) {
         const itemLength = bucket.length;
         const threshold = properties.productAmmount; // product ammount threshold to receive free items
@@ -136,6 +182,10 @@ class CheckoutSystem {
 
 }
 
+/**
+ * Sums all bucket's products price
+ * @param {array} bucket 
+ */
 function getBucketTotal(bucket) {
     let acc = 0;
 
@@ -145,6 +195,11 @@ function getBucketTotal(bucket) {
     return acc;
 }
 
+/**
+ * Return @number with @precision decimal places
+ * @param {number} number 
+ * @param {number} precision 
+ */
 function precisionRound(number, precision) {
     var factor = Math.pow(10, precision);
     return Math.round(number * factor) / factor;

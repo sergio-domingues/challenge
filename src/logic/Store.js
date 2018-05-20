@@ -16,17 +16,32 @@ const RULE_TYPES = {
     BUY_X_GET_Y: "buyOneGetOneFree"
 }
 
+/**
+ * Class representing a store
+ */
 class Store {
+    /**
+     * Creates a Store
+     * @param {string} rules Pricing rules file path
+     * @param {*} products Products file path
+     */
     constructor(rules = RULES_PATH, products = PRODUCTS_PATH) { // Default value     
         this.pricingRules = this.getPricingRules(rules);
         this.productList = this.getProductList(products);
         this.checkoutSystem = new CheckoutSystem(); // assumes that there is only 1 checkout sys instance per store
     }
 
+    /**
+     * Empties checkout cart.
+     */
     reset() {
         this.checkoutSystem.emptyCart();
     }
 
+    /**
+     * Parses pricing rules file 
+     * @param {string} filePath 
+     */
     getPricingRules(filePath) {
         let json = null;
         let rules = [];
@@ -50,6 +65,10 @@ class Store {
         return rules;
     }
 
+     /**
+     * Parses products file 
+     * @param {string} filePath 
+     */
     getProductList(filePath) {
         let json = null;
         let products = [];
@@ -71,6 +90,10 @@ class Store {
         return products;
     }
 
+    /**
+     * Adds product to cart
+     * @param {string} productId 
+     */
     addToCart(productId) {
         if (!productId) {
             throw new Error('on addToCart: productId shoudln\'t be null');
@@ -127,12 +150,3 @@ readFile = (filePath) => {
 module.exports = {
     Store,
 }
-
-/*
-let st = new Store();
-st.addToCart('MAP_EUR');
-st.addToCart('3M_SP_C');
-st.addToCart('3M_SP_C');
-st.addToCart('3M_SP_C');
-st.addToCart('1M_TRAF');
-console.log(st.checkout());*/

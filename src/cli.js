@@ -3,7 +3,8 @@ const rootDir = require('app-root-dir').get();
 const readline = require('readline');
 
 
-// strings
+// ======= strings
+
 const greeting = '=====  Welcome to NDrive Store! Happy shopping :-)   =====';
 const instructions = `=> [CLI INSTRUCTIONS]\n- Write the <Product Code> in order to add it to the cart.\n- To checkout just write 'checkout'.`;
 const startMsg = `Press 'Enter' to start shopping.`;
@@ -19,7 +20,9 @@ const productTable = `This is our product list:\n
 const initialMsg = `\n${greeting}\n\n${instructions}\n\n${productTable}\n\n${startMsg}`;
 const cartMsg = `Shopping Cart: `;
 const template = `Enter a product ID (write 'checkout' to empty your cart):`;
-const newInteraction = `Your cart is now empty! You can keep shopping.`; 
+const newInteraction = `Your cart is now empty! You can keep shopping.`;
+// =============================
+
 
 closeInput = (interface) => {
     interface.close();
@@ -49,7 +52,7 @@ handleUserInteraction = (rl, storeObj, input) => {
     }
 }
 
-
+// command line interface logic
 cli = (storeObj) => {
     const rl = readline.createInterface({
         input: process.stdin,
@@ -58,10 +61,12 @@ cli = (storeObj) => {
 
     let store = storeObj;
 
+    // initial interaction with user
     rl.question(initialMsg, (answer) => {
         console.log(`${cartMsg}${storeObj.getCartInfo()}\n${template}`);
     });
 
+    // on user input
     rl.on('line', (data) => {
         if (data == '' || !data)
             return;
@@ -69,11 +74,11 @@ cli = (storeObj) => {
         let val = handleUserInteraction(rl, store, data);
         let iterationMsg = `${cartMsg}${storeObj.getCartInfo()}\n${template}`;
 
+        // a null 'val' means that user didn't enter the checkout command yet
         if (val != null) {
             console.log(`\n====> Checkout value: ${val}€`);
 
-            // empty users cart
-            store.reset();
+            store.reset(); // empty users cart
 
             console.log(`${newInteraction}\n`);
             console.log(`${cartMsg}${storeObj.getCartInfo()}\n${template}`);
@@ -88,8 +93,6 @@ cli = (storeObj) => {
         process.exit(0);
     });
 }
-
-
 
 
 module.exports = {
