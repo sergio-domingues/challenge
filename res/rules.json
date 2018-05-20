@@ -12,7 +12,7 @@
             "type": "buyOneGetOneFree",
             "products": ["1M_TRAF"],
             "properties": {
-                "productAmmount": 1,
+                "productAmmount": 2,
                 "freeAmmount": 1
             }
         }

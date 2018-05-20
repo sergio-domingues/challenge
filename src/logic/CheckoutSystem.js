@@ -119,11 +119,11 @@ class CheckoutSystem {
         const freeItemAmmount = properties.freeAmmount;
 
         let sum = 0;
-        const numOffers = Math.round(Math.floor((itemLength / threshold) / 2) , 2);
+        let numOffers = Math.floor((itemLength / threshold));
 
         sum = getBucketTotal(bucket) - (numOffers * freeItemAmmount * bucket[0].price);
 
-        return sum;
+        return precisionRound(sum, 2);
     }
 
     // Returns raw sum of all item prices without any kind of processment
@@ -141,6 +141,11 @@ function getBucketTotal(bucket) {
     }
     return acc;
 }
+
+function precisionRound(number, precision) {
+    var factor = Math.pow(10, precision);
+    return Math.round(number * factor) / factor;
+  }
 
 
 module.exports = {

@@ -54,9 +54,7 @@ cli = (storeObj) => {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
-        prompt: 'NDrive Shop> '
     });
-    rl.prompt();
 
     let store = storeObj;
 
@@ -71,7 +69,7 @@ cli = (storeObj) => {
         let val = handleUserInteraction(rl, store, data);
         let iterationMsg = `${cartMsg}${storeObj.getCartInfo()}\n${template}`;
 
-        if (val) {
+        if (val != null) {
             console.log(`\n====> Checkout value: ${val}€`);
 
             // empty users cart
