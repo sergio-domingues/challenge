@@ -18,61 +18,80 @@ const productTable = `This is our product list:\n
 
 const initialMsg = `\n${greeting}\n\n${instructions}\n\n${productTable}\n\n${startMsg}`;
 const cartMsg = `Shopping Cart: `;
-const template = `Choose a product:`;
+const template = `Enter a product ID (write 'checkout' to empty your cart):`;
+const newInteraction = `Your cart is now empty! You can keep doing more purchases.`;
+
+closeInput = (interface) => {
+    interface.close();
+    process.stdin.destroy();
+}
+
+handleUserInteraction = (rl, storeObj, input) => {
+
+    const iterationMsg = `${cartMsg}${storeObj.getCartInfo()}\n${template}`;
+
+    switch (input) {
+        case 'checkout':
+            {
+                return storeObj.checkout();
+            }
+
+        default:
+            {
+                let ret = storeObj.addToCart(input);
+
+                if (!ret) {
+                    console.log('Not a valid product id! Check product list please.\n');
+                }
+
+                return null;
+            }
+    }
+}
 
 
 cli = (storeObj) => {
     const rl = readline.createInterface({
         input: process.stdin,
-        output: process.stdout
+        output: process.stdout,
+        prompt: 'NDrive Shop> '
     });
+    rl.prompt();
 
     let store = storeObj;
-        
+
     rl.question(initialMsg, (answer) => {
-       const iterationMsg = `${cartMsg}${store.getCartInfo()}\n${template}`;
-       rl.write(iterationMsg)
-    }); 
-    
-    rl.on('line', (data) => {
-        handleUserInteraction(rl, store, data);
+        console.log(`${cartMsg}${storeObj.getCartInfo()}\n${template}`);
     });
 
+    rl.on('line', (data) => {
+        if (data == '' || !data)
+            return;
 
+        let val = handleUserInteraction(rl, store, data);
+        let iterationMsg = `${cartMsg}${storeObj.getCartInfo()}\n${template}`;
+
+        if (val) {
+            console.log(`\n====> Checkout value: ${val}€`);
+
+            // empty users cart
+            store.reset();
+
+            console.log(`${newInteraction}\n`);
+            console.log(`${cartMsg}${storeObj.getCartInfo()}\n${template}`);
+        } else {
+            console.log(iterationMsg);
+        }
+    });
 
     rl.on('close', () => {
         // only gets triggered by ^C or ^D
         console.log('Goodbye! See you soon ^.^');
         process.exit(0);
     });
-
-
-
-    // closeinput at the end of the chat
-    //closeInput(rl);
 }
 
-closeInput = (interface) => {
-    rlInterface.close();
-    process.stdin.destroy();
-}
 
-handleUserInteraction = (rl, storeObj, input) => {
-    const iterationMsg = `${cartMsg}${store.getCartInfo()}\n${template}`;
-    switch(input){
-        case 'checkout': {
-            console.log(storeObj.checkout());
-        }
-        
-        default: {
-            let ret = storeObj.addToCart(input);
-
-            if(!ret){
-                rl.write('Not a valid input! Check cli instructions please.');
-            }           
-        }
-    }
-}
 
 
 module.exports = {

@@ -1,9 +1,8 @@
 const fs = require('fs');
-const _ = require('underscore');
 const path = require('path');
 const rootDir = require('app-root-dir').get();
 
-const Product = require(path.join(rootDir, '/src/logic', 'Product.js')).Product; 
+const Product = require(path.join(rootDir, '/src/logic', 'Product.js')).Product;
 const PricingRule = require(path.join(rootDir, '/src/logic', 'PricingRule.js')).PricingRule;
 const CheckoutSystem = require(path.join(rootDir, '/src/logic', 'CheckoutSystem.js')).CheckoutSystem;
 
@@ -11,44 +10,61 @@ const CheckoutSystem = require(path.join(rootDir, '/src/logic', 'CheckoutSystem.
 const RULES_PATH = path.join(rootDir, 'res', 'rules.json');
 const PRODUCTS_PATH = path.join(rootDir, 'res', 'products.json');
 
+
 const RULE_TYPES = {
     BULK_DISCOUNT: "bulkDiscount",
     BUY_X_GET_Y: "buyOneGetOneFree"
 }
 
-
 class Store {
-    constructor(rules = RULES_PATH, products = PRODUCTS_PATH) {  // Default value     
+    constructor(rules = RULES_PATH, products = PRODUCTS_PATH) { // Default value     
         this.pricingRules = this.getPricingRules(rules);
-        this.productList = this.geProductList(products);
+        this.productList = this.getProductList(products);
         this.checkoutSystem = new CheckoutSystem(); // assumes that there is only 1 checkout sys instance per store
     }
 
+    reset() {
+        this.checkoutSystem.emptyCart();
+    }
+
     getPricingRules(filePath) {
-        const json = JSON.parse(readFile(filePath));
+        let json = null;
         let rules = [];
 
-        for (rule in json.pricingRules) {
+        try {
+            json = JSON.parse(fs.readFileSync(filePath));
+        } catch (error) {
+            console.log(e);
+        }
+
+
+        for (let i = 0; i < json.pricingRules.length; i++) {
             rules.push(
                 new PricingRule(
-                    rule.products,
-                    rule.ruleType,
-                    rule.properties
+                    json.pricingRules[i].products,
+                    json.pricingRules[i].type,
+                    json.pricingRules[i].properties
                 ))
         }
 
         return rules;
     }
 
-    geProductList(filePath){
-        const json = JSON.parse(readFile(filePath));
+    getProductList(filePath) {
+        let json = null;
         let products = [];
 
-        for (product in json.products) {
+        try {
+            json = JSON.parse(fs.readFileSync(filePath));
+        } catch (error) {
+            console.log(e);
+        }
+
+        for (let i = 0; i < json.products.length; i++) {
             products.push(
                 new Product(
-                    product.id,
-                    product.price,
+                    json.products[i].id,
+                    json.products[i].price,
                 ))
         }
 
@@ -56,15 +72,22 @@ class Store {
     }
 
     addToCart(productId) {
-        if(!productId){
+        if (!productId) {
             throw new Error('on addToCart: productId shoudln\'t be null');
         }
 
-        this.checkoutSystem.scanProduct(productId);
+        let product = this.productList.find((element) => element.id == productId);
+
+        if (!product) {
+            return false; // product id doesnt exist in product list          
+        } else {
+            this.checkoutSystem.scanProduct(product);
+            return true;
+        }
     }
 
     checkout() {
-        return this.checkoutSystem.checkout(this.pricingRules);
+        return this.checkoutSystem.checkout(this.pricingRules, RULE_TYPES);
     }
 
     getCartInfo() {

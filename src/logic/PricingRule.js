@@ -1,22 +1,19 @@
-class PricingRule{
-    constructor(productListIds, ruleType, properties){
+class PricingRule {
+    constructor(productListIds, ruleType, properties) {
         this.productListIds = productListIds;
         this.ruleType = ruleType;
         this.properties = properties;
     }
 
-    toString(){
+    toString() {
         return `Pricing rule of type ${this.ruleType}`;
     }
 
-    hasProductId(id){
-        return this.productListIds.find(id);
+    hasProductId(id) {
+        return this.productListIds.indexOf(id);
     }
 }
 
 module.exports = {
     PricingRule,
 }
-
-
-

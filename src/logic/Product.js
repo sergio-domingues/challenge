@@ -3,6 +3,10 @@ class Product {
         this.id = id;
         this.price = price;
     }
+
+    toString(){
+        return `${this.id}`;
+    }
 }
 
 module.exports = {

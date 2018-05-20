@@ -1,3 +1,5 @@
+const _ = require('underscore');
+
 class CheckoutSystem {
     constructor() {
         this.cart = [];
@@ -7,7 +9,11 @@ class CheckoutSystem {
         if (this.cart.length == 0)
             return '<empty>';
         else
-            this.cart.toString();
+            return this.cart.toString();
+    }
+
+    emptyCart(){
+        this.cart = [];
     }
 
     scanProduct(item) {
@@ -18,18 +24,19 @@ class CheckoutSystem {
         }
     }
 
-    checkout(pricingRules) {
+    checkout(pricingRules, ruleTypes) {
         if (!pricingRules) {
             throw new Error('On checkout: Pricing rules should not be null!');
         }
 
+        this.ruleTypes = ruleTypes;
         let checkoutValue = null;
         let splitted = null;
 
-        // split products into buckets (arrays) of products with the same id
-        splitted = _.groupBy(this.cart, 'id'); // todo test if this works
+        // split products into buckets of products with the same id
+        splitted = _.groupBy(this.cart, (element) => element.id, 'id'); // todo test if this works
 
-        checkoutValue = this.applyPricingRules(pricingRules, splitted);
+        checkoutValue = this.applyPricingRules(pricingRules, Object.values(splitted));
 
         return checkoutValue;
     }
@@ -45,8 +52,8 @@ class CheckoutSystem {
 
         let totalAmmount = 0;
 
-        for (let bucket in buckets) {
-            totalAmmount = this.handlePricingRule(pricingRules, bucket);
+        for (let i = 0; i < buckets.length; i++) {
+            totalAmmount += this.handlePricingRule(pricingRules, buckets[i]);
         }
 
         return totalAmmount;
@@ -62,22 +69,27 @@ class CheckoutSystem {
         }
 
         const rule = this.getRule(pricingRules, bucket[0].id);
+        const processedBucket = bucket.map((element) => element.id);
 
         const handlers = {
-            [RULE_TYPES.BULK_DISCOUNT]: this.handleBulkDiscountRule(rule.properties, bucket),
-            [RULE_TYPES.BUY_X_GET_Y]: this.handleBuyXGetYRule(rule.properties, bucket),
+            [this.ruleTypes.BULK_DISCOUNT]: () => {
+                return this.handleBulkDiscountRule(rule.properties, bucket);
+            },
+            [this.ruleTypes.BUY_X_GET_Y]: () => {
+                return this.handleBuyXGetYRule(rule.properties, bucket);
+            },
             ["default"]: () => {
-                this.handleDefaultRule(); // just returns the raw price sum of the products price
+                return this.handleDefaultRule(bucket); // just returns the raw price sum of the products price
             }
         }
 
-        return handlers(handlers[rule.ruleType] || handlers.default)(); // default in case rule == null
+        return (handlers[rule.ruleType] || handlers['default'])(); // default in case rule == null
     }
 
     getRule(rules, productId) {
-        for (let rule in rules) {
-            if (rule.hasProductId(productId))
-                return rule;
+        for (let i = 0; i < rules.length; i++) {
+            if (rules[i].hasProductId(productId) >= 0)
+                return rules[i];
         }
 
         return null;
@@ -93,10 +105,10 @@ class CheckoutSystem {
         const discountValue = properties.discountPerItem;
 
         let sum = 0;
-        const numDiscounts = Math.floor(itemLength / threshold); // number of discount applied
+        const applyDiscount = itemLength >= threshold ? itemLength : 0;
 
         // sum = total - (itemLength/threshold) * discountValue
-        sum = list.reduce(sumProductPrices) - numDiscounts * discountValue;
+        sum = getBucketTotal(bucket) - applyDiscount * discountValue;
 
         return sum;
     }
@@ -107,24 +119,28 @@ class CheckoutSystem {
         const freeItemAmmount = properties.freeAmmount;
 
         let sum = 0;
-        const numOffers = Math.floor(itemLength / threshold);
+        const numOffers = Math.round(Math.floor((itemLength / threshold) / 2) , 2);
 
-        sum = list.reduce(sumProductPrices) - (numOffers * freeItemAmmount * bucket[0].price);
+        sum = getBucketTotal(bucket) - (numOffers * freeItemAmmount * bucket[0].price);
 
         return sum;
     }
 
     // Returns raw sum of all item prices without any kind of processment
     handleDefaultRule(bucket) {
-        return list.reduce(sumProductPrices);
+        return getBucketTotal(bucket);
     }
 
 }
 
-// sum function to be used by Array.reduce method
-sumProductPrices = (total, item) => {
-    return total + item.price; // return the sum of the accumulator and the current price. as the the new accumulator)
-};
+function getBucketTotal(bucket) {
+    let acc = 0;
+
+    for (let i = 0; i < bucket.length; i++) {
+        acc += bucket[i].price;
+    }
+    return acc;
+}
 
 
 module.exports = {
