@@ -19,6 +19,7 @@
   "homepage": "https://github.com/sergio-domingues/challenge#readme",
   "dependencies": {
     "app-root-dir": "^1.0.2",
+    "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
     "underscore": "^1.9.0"
   }
