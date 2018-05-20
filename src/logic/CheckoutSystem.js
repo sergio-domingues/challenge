@@ -29,6 +29,9 @@ class CheckoutSystem {
             throw new Error('On checkout: Pricing rules should not be null!');
         }
 
+        if(this.cart.length == 0)
+            return 0;
+
         this.ruleTypes = ruleTypes;
         let checkoutValue = null;
         let splitted = null;

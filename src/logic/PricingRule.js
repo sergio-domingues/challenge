@@ -10,6 +10,10 @@ class PricingRule {
     }
 
     hasProductId(id) {
+        if(!id){
+            throw new Error("On hasProductId: param souldn\'t be null!");
+        }
+
         return this.productListIds.indexOf(id);
     }
 }

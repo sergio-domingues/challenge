@@ -1,9 +1,14 @@
-Having a node.js version >= 8.10.0.
+Requirements:
+    - Having a node.js version >= 8.10.0.
 
-In order to run the program, encontrando-se na raíz do directório, execute os seguintes passos:
+In order to run the program, enter the root directory and execute the following commands:
 
-1.  Executar o script build.sh: sh run.sh
-2.  Interagir com a interface
+1.  Run 'npm i' or 'npm install' in order to install all necessary modules and dependencies.
+2.  Start the command line interface (cli) as in the program by running 'npm start'.
+3.  Follow the cli instructions.
+
+=>  You can execute the tests by running 'npm test', they lie inside the ./test/ dir
+
 
 /**
  *   
